@@ -7,41 +7,35 @@ import "./App.css"
 
 function App() {
   const [open, setOpen] = useState<boolean>(false);
-  const [word, setWord] = useState<string>();
+  const [query, setQuery] = useState<string>();
   const [suggestions, setSuggestions] = useState<string[]>();
   const [numbers, setNumbers] = useState<number>()
 
-  const handleOnChange = ({
-    target,
-  }: React.ChangeEvent<HTMLInputElement>): void => {
-    const { value } = target;
-    setSuggestions(fruits.filter(fruit => fruit.slice(0, numbers) === word?.slice(0, numbers)))
-    console.log("fruits filter NUMBERS", numbers)
-    setWord(value);
-  };
-
   useEffect(() => {
-    if (word !== undefined) setNumbers(word?.length + 1)
-    word === undefined ? setOpen(false) : setOpen(true);
-    if (word?.length === 0) setOpen(false);
-    if (word?.length === 0) setSuggestions([]);
-  }, [word]);
-
+  setNumbers(query?.length)
+  query !== undefined ? setOpen(true) : setOpen(false);
+  if (query?.length === 0) setOpen(false);
+  }, [query])
   
   const handleOnKeyDown = (
     { key }: React.KeyboardEvent<HTMLInputElement>,     
   ) => {
     if (key === "Backspace") {
       if (numbers !== undefined) setNumbers(numbers - 1);
+      if (query?.length === 0) setSuggestions([])
     }
   };
+
+  useEffect(() => {
+    setSuggestions(fruits.filter(fruit => fruit.slice(0, (numbers || 0 + 1)) === query?.slice(0, (numbers || 0 + 1))))
+  }, [query])
 
   return (
     <div className="App">
       <div>
       <label>
-        enter a word:
-        <input onKeyDown={(e) => handleOnKeyDown(e)} onChange={handleOnChange} />
+        enter a query:
+        <input onKeyDown={(e) => handleOnKeyDown(e)} onChange={event => setQuery(event.target.value)} />
       </label>
       {open ? (
         <>
